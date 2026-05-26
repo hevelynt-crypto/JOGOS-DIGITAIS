@@ -1,1 +1,103 @@
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro; // Usado para textos modernos na Unity
 
+public class GameManager : MonoBehaviour
+{
+    public static GameManager Instance;
+
+    [Header("Configurações do Jogo")]
+    public float tempoMaximo = 60f;
+    private float tempoAtual;
+    private int pontuacao;
+    private bool jogoRodando = false;
+
+    [Header("Telas (UI Panels)")]
+    public GameObject painelStart;
+    public GameObject painelGame;
+    public GameObject painelGameOver;
+
+    [Header("Textos da UI")]
+    public TextMeshProUGUI textoPontuacao;
+    public TextMeshProUGUI textoTempo;
+    public TextMeshProUGUI textoPontuacaoFinal;
+
+    private void Awake()
+    {
+        // Padrão Singleton para garantir apenas um GameManager
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+    }
+
+    private void Start()
+    {
+        MostrarTelaStart();
+    }
+
+    private void Update()
+    {
+        if (jogoRodando)
+        {
+            tempoAtual -= Time.deltaTime;
+            textoTempo.text = "Tempo: " + Mathf.Ceil(tempoAtual).ToString() + "s";
+
+            if (tempoAtual <= 0)
+            {
+                FimDeJogo();
+            }
+        }
+    }
+
+    public void MostrarTelaStart()
+    {
+        painelStart.SetActive(true);
+        painelGame.SetActive(false);
+        painelGameOver.SetActive(false);
+    }
+
+    // Função chamada pelo botão "Jogar"
+    public void IniciarJogo()
+    {
+        pontuacao = 0;
+        tempoAtual = tempoMaximo;
+        AtualizarTextoPontuacao();
+        
+        painelStart.SetActive(false);
+        painelGame.SetActive(true);
+        painelGameOver.SetActive(false);
+        
+        jogoRodando = true;
+    }
+
+    // Função chamada quando o jogador faz uma combinação
+    public void AdicionarPontos(int pontos)
+    {
+        if (!jogoRodando) return;
+
+        pontuacao += pontos;
+        AtualizarTextoPontuacao();
+    }
+
+    private void AtualizarTextoPontuacao()
+    {
+        textoPontuacao.text = "Pontos: " + pontuacao.ToString();
+    }
+
+    private void FimDeJogo()
+    {
+        jogoRodando = false;
+        textoPontuacaoFinal.text = "Sua Pontuação: " + pontuacao.ToString();
+        
+        painelStart.SetActive(false);
+        painelGame.SetActive(false);
+        painelGameOver.SetActive(true);
+    }
+
+    // Função chamada pelo botão "Reiniciar" na tela de Game Over
+    public void ReiniciarJogo()
+    {
+        IniciarJogo();
+    }
+}
