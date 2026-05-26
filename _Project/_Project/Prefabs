@@ -1,1 +1,16 @@
+using UnityEngine;
 
+public class ItemCombina : MonoBehaviour
+{
+    public int valorDoItem = 10; // Quantos pontos este item vale
+
+    // Função ativada quando o jogador clica no objeto (precisa de um Collider2D no objeto)
+    private void OnMouseDown()
+    {
+        // Envia os pontos para o GameManager
+        GameManager.Instance.AdicionarPontos(valorDoItem);
+        
+        // Simula a destruição do item ao fazer a combinação (Match)
+        Destroy(gameObject);
+    }
+}
